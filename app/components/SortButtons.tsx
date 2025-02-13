@@ -1,4 +1,9 @@
-import { faCalendarDay, faSort } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalendarDay,
+  faSort,
+  faSortDown,
+  faSortUp,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { FC } from 'react';
 import { css } from 'styled-system/css';
@@ -31,19 +36,56 @@ const sortLabelStyles = css({
   margin: 'auto',
 });
 
-export const SortButtons: FC = () => {
+export const SortButtons: FC<SortButtonsProps> = ({
+  onSortByPublishedAt,
+  onSortByTitle,
+  sortByPublishedAt,
+  sortByTitle,
+}) => {
+  const handleSortByPublishedAt = () => {
+    return sortByPublishedAt === 'asc'
+      ? onSortByPublishedAt('desc')
+      : onSortByPublishedAt('asc');
+  };
+
+  const handleSortByTitle = () => {
+    return sortByTitle === 'asc' ? onSortByTitle('desc') : onSortByTitle('asc');
+  };
   return (
     <div className={flex()}>
       <div className={sortButtonWrapperStyles}>
-        <button className={sortButtonStyles}>
-          <FontAwesomeIcon icon={faSort} className={sortArrowStyles} />
+        <button className={sortButtonStyles} onClick={handleSortByTitle}>
+          {sortByTitle ? (
+            sortByTitle === 'asc' ? (
+              <FontAwesomeIcon icon={faSortUp} className={sortArrowStyles} />
+            ) : (
+              <FontAwesomeIcon icon={faSortDown} className={sortArrowStyles} />
+            )
+          ) : (
+            <FontAwesomeIcon icon={faSort} className={sortArrowStyles} />
+          )}
           <p className={sortLabelStyles}>abc</p>
         </button>
-        <button className={sortButtonStyles}>
-          <FontAwesomeIcon icon={faSort} className={sortArrowStyles} />
+        <button className={sortButtonStyles} onClick={handleSortByPublishedAt}>
+          {sortByPublishedAt ? (
+            sortByPublishedAt === 'asc' ? (
+              <FontAwesomeIcon icon={faSortUp} className={sortArrowStyles} />
+            ) : (
+              <FontAwesomeIcon icon={faSortDown} className={sortArrowStyles} />
+            )
+          ) : (
+            <FontAwesomeIcon icon={faSort} className={sortArrowStyles} />
+          )}
           <FontAwesomeIcon icon={faCalendarDay} className={sortLabelStyles} />
         </button>
       </div>
     </div>
   );
 };
+
+interface SortButtonsProps {
+  onSortByPublishedAt: (sortDir: 'asc' | 'desc') => void;
+  onSortByTitle: (sortDir: 'asc' | 'desc') => void;
+  sortByPublishedAt: 'asc' | 'desc' | null;
+  sortByTitle: 'asc' | 'desc' | null;
+}

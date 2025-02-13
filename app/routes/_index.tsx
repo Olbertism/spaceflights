@@ -9,8 +9,8 @@ import type { PaginatedArticleList } from '~/types/Api';
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'New Remix App' },
-    { name: 'description', content: 'Welcome to Remix!' },
+    { title: 'Spaceflights' },
+    { name: 'description', content: 'Aktuelle Weltraumflüge in Ihrem Bezirk!' },
   ];
 };
 
@@ -25,28 +25,91 @@ export default function Index() {
   const [hasApiError, setHasApiError] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortByPublishedAt, setSortByPublishedAt] = useState<
+    'asc' | 'desc' | null
+  >(null);
+
+  const [sortByTitle, setSortByTitle] = useState<'asc' | 'desc' | null>(null);
+
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const fetchData = useCallback(async (url: string) => {
+    setIsLoading(true);
+    const response = await fetch(url);
+    if (response.ok) {
+      const articles = await response.json();
+      setApiArticles(articles);
+      setTotalPages(Math.ceil(articles.count / 10));
+    } else {
+      setHasApiError(true);
+    }
+    setIsLoading(false);
+  }, []);
 
   // initial fetch
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      const url = `https://api.spaceflightnewsapi.net/v4/articles${searchTerm && '/?title_contains=abc'}`;
-      const response = await fetch(url);
-      if (response.ok) {
-        const articles = await response.json();
-        setApiArticles(articles);
-      } else {
-        setHasApiError(true);
-      }
-      setIsLoading(false);
-    };
-    fetchData();
-  }, [searchTerm]);
+    fetchData('https://api.spaceflightnewsapi.net/v4/articles/');
+  }, [fetchData]);
 
-  const onSearch = useCallback((searchTerm: string) => {
-    console.log(searchTerm);
-    setSearchTerm(searchTerm);
-  }, []);
+  const onSearch = useCallback(
+    (searchTerm: string) => {
+      setSortByPublishedAt(null);
+      setSortByTitle(null);
+      setSearchTerm(searchTerm);
+      fetchData(
+        `https://api.spaceflightnewsapi.net/v4/articles/${searchTerm && '?title_contains=' + searchTerm}`,
+      );
+    },
+    [fetchData],
+  );
+
+  const onSortByPublishedAt = useCallback(
+    (sortDir: 'asc' | 'desc') => {
+      setSearchTerm('');
+      setSortByTitle(null);
+      setSortByPublishedAt(sortDir);
+      fetchData(
+        `https://api.spaceflightnewsapi.net/v4/articles/${sortDir === 'asc' ? '?ordering=published_at' : '?ordering=-published_at'}`,
+      );
+    },
+    [fetchData],
+  );
+
+  const onSortByTitle = useCallback(
+    (sortDir: 'asc' | 'desc') => {
+      setSearchTerm('');
+      setSortByPublishedAt(null);
+      setSortByTitle(sortDir);
+      const sortedResults = apiArticles.results.sort((a, b) => {
+        const titleA = a.title.toLowerCase();
+        const titleB = b.title.toLowerCase();
+        if (titleA < titleB) {
+          return sortDir === 'asc' ? -1 : 1;
+        }
+        if (titleA > titleB) {
+          return sortDir === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+      const updatedState = { ...apiArticles, results: sortedResults };
+      setApiArticles(updatedState);
+    },
+    [apiArticles],
+  );
+
+  const onPageChange = useCallback(
+    (pageNumber: number) => {
+      console.log(pageNumber);
+      if (pageNumber < currentPage) {
+        apiArticles && apiArticles.previous && fetchData(apiArticles.previous);
+      } else {
+        apiArticles && apiArticles.next && fetchData(apiArticles.next);
+      }
+      setCurrentPage(pageNumber);
+    },
+    [currentPage, apiArticles, fetchData],
+  );
 
   const gridItemStyles = css({
     display: 'flex',
@@ -96,7 +159,12 @@ export default function Index() {
           })}
         >
           <SearchBar onSearch={onSearch} />
-          <SortButtons />
+          <SortButtons
+            onSortByTitle={onSortByTitle}
+            onSortByPublishedAt={onSortByPublishedAt}
+            sortByPublishedAt={sortByPublishedAt}
+            sortByTitle={sortByTitle}
+          />
         </div>
       </div>
 
@@ -173,9 +241,9 @@ export default function Index() {
             })}
           >
             <Pagination
-              currentPage={1}
-              totalPages={10}
-              onPageChange={() => console.log('change')}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={onPageChange}
             />
           </div>
         </>
