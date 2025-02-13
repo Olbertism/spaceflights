@@ -32,6 +32,7 @@ export const SearchBar: FC<SearchBarProps> = ({ onSearch }) => {
   const searchBarStyles = css({
     height: '100%',
     width: '100%',
+    paddingLeft: '1',
   });
 
   return (
