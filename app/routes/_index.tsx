@@ -38,7 +38,7 @@ export default function Index() {
   const fetchData = useCallback(async (url: string) => {
     setIsLoading(true);
     const response = await fetch(url);
-    if (!response.ok) {
+    if (response.ok) {
       const articles = await response.json();
       setApiArticles(articles);
       setTotalPages(Math.ceil(articles.count / 10));
@@ -138,7 +138,7 @@ export default function Index() {
                 margin: 'auto',
               })}
             >
-              Spaceflights News
+              Spaceflight News
             </h1>
           </div>
         </Link>
