@@ -29,9 +29,6 @@ export default defineConfig({
   theme: {
     extend: {
       tokens: {
-        borders: {
-          basic: { value: '1px solid colors.black' },
-        },
         colors: {
           primary: { value: '#3A4E48' },
           secondary: { value: '#8B9D83' },
@@ -39,6 +36,10 @@ export default defineConfig({
           background: { value: '#FFFBF9' },
           neutral: { value: '#6A7B76' },
           black: { value: '#040303' },
+        },
+        borders: {
+          basic: { value: '2px solid #8B9D83' },
+          subtle: { value: '1px solid red' },
         },
       },
     },
