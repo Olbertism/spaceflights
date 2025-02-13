@@ -32,7 +32,7 @@ const sortArrowStyles = css({
 
 const sortLabelStyles = css({
   color: 'primary',
-  height: '60%',
+ 
   margin: 'auto',
 });
 

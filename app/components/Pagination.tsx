@@ -14,6 +14,11 @@ export const Pagination: FC<PaginationProps> = ({
     if (currentPage < totalPages) onPageChange(currentPage + 1);
   };
 
+  const buttonStyles = css({
+    color: 'primary',
+    textDecoration: 'underline',
+  });
+
   return (
     <div
       className={css({
@@ -30,7 +35,11 @@ export const Pagination: FC<PaginationProps> = ({
           gap: '3',
         })}
       >
-        <button onClick={handlePrev} disabled={currentPage === 1} className="">
+        <button
+          onClick={handlePrev}
+          disabled={currentPage === 1}
+          className={buttonStyles}
+        >
           Prev
         </button>
         <span>
@@ -39,7 +48,7 @@ export const Pagination: FC<PaginationProps> = ({
         <button
           onClick={handleNext}
           disabled={currentPage === totalPages}
-          className=""
+          className={buttonStyles}
         >
           Next
         </button>
