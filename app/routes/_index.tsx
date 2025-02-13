@@ -2,11 +2,11 @@ import { Link } from '@remix-run/react';
 import type { MetaFunction } from '@vercel/remix';
 import { useCallback, useEffect, useState } from 'react';
 import { css } from 'styled-system/css';
-import { flex } from 'styled-system/patterns';
+import { container, flex } from 'styled-system/patterns';
 import { Pagination } from '~/components/Pagination';
 import { SearchBar } from '~/components/SearchBar';
 import { SortButtons } from '~/components/SortButtons';
-import type { PaginatedArticleList } from '~/types/Api';
+import type { PaginatedArticleList } from '~/types/api';
 
 export const meta: MetaFunction = () => {
   return [
@@ -170,7 +170,9 @@ export default function Index() {
       </div>
 
       {isLoading ? (
-        <div>Loading...</div>
+        <div className={container({ height: '1/3' })}>
+          <div className={css({ fontSize: 'xl' })}>Loading...</div>
+        </div>
       ) : hasApiError ? (
         <div>Unable to fetch data</div>
       ) : (
@@ -205,7 +207,10 @@ export default function Index() {
                       <img
                         src={result.image_url}
                         alt={result.title}
-                        className={css({ margin: 'auto' })}
+                        className={css({
+                          margin: 'auto',
+                          _hover: { opacity: '75%' },
+                        })}
                       />
                     </a>
                   </div>
