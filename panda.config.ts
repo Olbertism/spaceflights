@@ -1,4 +1,16 @@
-import { defineConfig } from '@pandacss/dev';
+import { defineConfig, defineGlobalStyles } from '@pandacss/dev';
+
+const globalCss = defineGlobalStyles({
+  'html, body, main': {
+    height: '100%',
+    fontFamily: 'system-ui, sans-serif',
+    color: 'gray.900',
+    lineHeight: '1.5',
+  },
+  button: {
+    cursor: 'pointer',
+  },
+});
 
 export default defineConfig({
   // Whether to use css reset
@@ -15,9 +27,25 @@ export default defineConfig({
 
   // Useful for theme customization
   theme: {
-    extend: {},
+    extend: {
+      tokens: {
+        colors: {
+          primary: { value: '#3A4E48' },
+          secondary: { value: '#8B9D83' },
+          accent: { value: '#BEB0A7' },
+          background: { value: '#FFFBF9' },
+          neutral: { value: '#6A7B76' },
+          black: { value: '#040303' },
+        },
+        borders: {
+          basic: { value: '2px solid #8B9D83' },
+          subtle: { value: '1px solid red' },
+        },
+      },
+    },
   },
 
   // The output directory for your css system
   outdir: 'styled-system',
+  globalCss,
 });
