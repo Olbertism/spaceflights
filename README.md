@@ -28,6 +28,12 @@ The app uses vitest for unit and component testing:
 npm run test
 ```
 
+or
+
+```sh
+npm run coverage
+```
+
 ## Api types
 
 Since Space flight api provides a swagger file, the types were extracted to TS definitions by [swagger-typescript-api](https://www.npmjs.com/package/swagger-typescript-api).
