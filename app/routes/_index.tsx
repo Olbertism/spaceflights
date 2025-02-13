@@ -3,6 +3,7 @@ import type { MetaFunction } from '@vercel/remix';
 import { useCallback, useEffect, useState } from 'react';
 import { css } from 'styled-system/css';
 import { container, flex } from 'styled-system/patterns';
+import { ArticleGrid } from '~/components/ArticleGrid';
 import { Pagination } from '~/components/Pagination';
 import { SearchBar } from '~/components/SearchBar';
 import { SortButtons } from '~/components/SortButtons';
@@ -37,7 +38,7 @@ export default function Index() {
   const fetchData = useCallback(async (url: string) => {
     setIsLoading(true);
     const response = await fetch(url);
-    if (response.ok) {
+    if (!response.ok) {
       const articles = await response.json();
       setApiArticles(articles);
       setTotalPages(Math.ceil(articles.count / 10));
@@ -99,7 +100,6 @@ export default function Index() {
 
   const onPageChange = useCallback(
     (pageNumber: number) => {
-      console.log(pageNumber);
       if (pageNumber < currentPage) {
         apiArticles && apiArticles.previous && fetchData(apiArticles.previous);
       } else {
@@ -109,14 +109,6 @@ export default function Index() {
     },
     [currentPage, apiArticles, fetchData],
   );
-
-  const gridItemStyles = css({
-    display: 'flex',
-    flexDir: 'column',
-    gap: '1',
-    bg: 'accent',
-    border: 'basic',
-  });
 
   return (
     <main
@@ -174,72 +166,14 @@ export default function Index() {
           <div className={css({ fontSize: 'xl' })}>Loading...</div>
         </div>
       ) : hasApiError ? (
-        <div>Unable to fetch data</div>
+        <div className={container({ height: '1/3' })}>
+          <div className={css({ fontSize: 'xl' })}>
+            Unable to fetch data. Please try again later.
+          </div>
+        </div>
       ) : (
         <>
-          <div
-            className={css({
-              display: 'grid',
-              gridTemplateColumns: '1fr',
-              sm: { gridTemplateColumns: 'repeat(2, 1fr)' },
-              lg: { gridTemplateColumns: 'repeat(3, 1fr)' },
-              xl: { gridTemplateColumns: 'repeat(4, 1fr)' },
-              gridTemplateRows: 'min-content auto',
-              columnGap: '6',
-              rowGap: '4',
-            })}
-          >
-            {apiArticles.results.map((result) => {
-              return (
-                <div key={result.id} className={gridItemStyles}>
-                  <div
-                    className={flex({
-                      height: '100%',
-                      justifyContent: 'space-around',
-                    })}
-                  >
-                    <a
-                      href={result.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={flex({})}
-                    >
-                      <img
-                        src={result.image_url}
-                        alt={result.title}
-                        className={css({
-                          margin: 'auto',
-                          _hover: { opacity: '75%' },
-                        })}
-                      />
-                    </a>
-                  </div>
-
-                  <div
-                    className={css({
-                      padding: '2',
-                    })}
-                  >
-                    <h3 className={css({ fontWeight: 'bold' })}>
-                      {result.title}
-                    </h3>
-                    <p>{result.summary.slice(0, 100) + '...'}</p>
-                    <div
-                      className={css({
-                        color: 'neutral',
-                      })}
-                    >
-                      <span>{result.news_site}</span>
-                      <span> | </span>
-                      <span>
-                        {new Date(result.published_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <ArticleGrid apiArticles={apiArticles} />
           <div
             className={css({
               display: 'flex',
