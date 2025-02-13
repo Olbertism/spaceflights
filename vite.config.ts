@@ -8,8 +8,18 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 installGlobals();
 
 export default defineConfig({
-  plugins: [remix({ presets: [vercelPreset()] }), tsconfigPaths()],
+  plugins: [
+    process.env.NODE_ENV === 'test' // see https://github.com/remix-run/remix/issues/8982
+      ? null
+      : remix({
+          presets: [vercelPreset()],
+          ignoredRouteFiles: ['**/*.css'],
+        }),
+    tsconfigPaths(),
+  ],
   test: {
     globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./setupTests.js'],
   },
 });

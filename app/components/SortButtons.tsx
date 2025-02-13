@@ -32,7 +32,7 @@ const sortArrowStyles = css({
 
 const sortLabelStyles = css({
   color: 'primary',
- 
+
   margin: 'auto',
 });
 
@@ -66,7 +66,7 @@ export const SortButtons: FC<SortButtonsProps> = ({
           )}
           <p className={sortLabelStyles}>abc</p>
         </button>
-        <button className={sortButtonStyles} onClick={handleSortByPublishedAt}>
+        <button className={sortButtonStyles} onClick={handleSortByPublishedAt} aria-label='published-at-sort'>
           {sortByPublishedAt ? (
             sortByPublishedAt === 'asc' ? (
               <FontAwesomeIcon icon={faSortUp} className={sortArrowStyles} />

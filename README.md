@@ -1,25 +1,8 @@
-# Remix
+# Spaceflights Example App
 
-This directory is a brief example of a [Remix](https://remix.run/docs) site that can be deployed to Vercel with zero configuration.
+A simple app that retrieves articles from the space flight API, based on [Remix](https://remix.run).
 
-To get started, run the Remix cli with this template
-
-```sh
-npx create-remix@latest --template vercel/vercel/examples/remix
-```
-
-## Deploy Your Own
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/vercel/tree/main/examples/remix&template=remix)
-
-_Live Example: https://remix-run-template.vercel.app_
-
-You can also deploy using the [Vercel CLI](https://vercel.com/docs/cli):
-
-```sh
-npm i -g vercel
-vercel
-```
+Deployed version: https://spaceflights-nu.vercel.app/
 
 ## Development
 
@@ -29,10 +12,28 @@ To run your Remix app locally, make sure your project's local dependencies are i
 npm install
 ```
 
-Afterwards, start the Remix development server like so:
+Afterwards, start the Remix development server:
 
 ```sh
 npm run dev
 ```
 
-Open up [http://localhost:5173](http://localhost:5173) and you should be ready to go!
+Open up [http://localhost:5173](http://localhost:5173)
+
+## Test
+
+The app uses vitest for unit and component testing:
+
+```sh
+npm run test
+```
+
+## Api types
+
+Since Space flight api provides a swagger file, the types were extracted to TS definitions by [swagger-typescript-api](https://www.npmjs.com/package/swagger-typescript-api).
+
+To regenerate type definitions, place the latest swagger file into this repository and run
+
+```sh
+npx swagger-typescript-api -p ./api.yaml -o ./app/types -n api.ts
+```
