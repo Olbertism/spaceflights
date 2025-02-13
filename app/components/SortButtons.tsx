@@ -90,5 +90,5 @@ interface SortButtonsProps {
   onSortByPublishedAt: (sortDir: 'asc' | 'desc') => void;
   onSortByTitle: (sortDir: 'asc' | 'desc') => void;
   sortByPublishedAt: 'asc' | 'desc' | null;
-  sortByTitle: 'asc' | 'desc' | null;
+  sortByTitle: 'asc' | 'desc' | null | undefined;
 }

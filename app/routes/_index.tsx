@@ -7,6 +7,7 @@ import { ArticleGrid } from '~/components/ArticleGrid';
 import { Pagination } from '~/components/Pagination';
 import { SearchBar } from '~/components/SearchBar';
 import { SortButtons } from '~/components/SortButtons';
+import { sortResults } from '~/helpers/sortResults';
 import type { PaginatedArticleList } from '~/types/api';
 
 export const meta: MetaFunction = () => {
@@ -30,23 +31,35 @@ export default function Index() {
     'asc' | 'desc' | null
   >(null);
 
-  const [sortByTitle, setSortByTitle] = useState<'asc' | 'desc' | null>(null);
+  const [sortByTitle, setSortByTitle] = useState<
+    'asc' | 'desc' | null | undefined
+  >(null);
 
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const fetchData = useCallback(async (url: string) => {
-    setIsLoading(true);
-    const response = await fetch(url);
-    if (response.ok) {
-      const articles = await response.json();
-      setApiArticles(articles);
-      setTotalPages(Math.ceil(articles.count / 10));
-    } else {
-      setHasApiError(true);
-    }
-    setIsLoading(false);
-  }, []);
+  const fetchData = useCallback(
+    async (url: string, sortByTitle?: 'asc' | 'desc' | null) => {
+      setIsLoading(true);
+      const response = await fetch(url);
+      if (response.ok) {
+        const articles = await response.json();
+        if (sortByTitle) {
+          /* Spaceflights API does not seem to offer a BE sorting on the title. Therefore a simple front end
+        sorting on the current fetched data set is done */
+          const sortedArticles = sortResults(articles, sortByTitle);
+          setApiArticles(sortedArticles);
+        } else {
+          setApiArticles(articles);
+        }
+        setTotalPages(Math.ceil(articles.count / 10));
+      } else {
+        setHasApiError(true);
+      }
+      setIsLoading(false);
+    },
+    [],
+  );
 
   // initial fetch
   useEffect(() => {
@@ -79,21 +92,11 @@ export default function Index() {
     (sortDir: 'asc' | 'desc') => {
       setSortByPublishedAt(null);
       setSortByTitle(sortDir);
+
       /* Spaceflights API does not seem to offer a BE sorting on the title. Therefore a simple front end
       sorting on the current fetched data set is done */
-      const sortedResults = apiArticles.results.sort((a, b) => {
-        const titleA = a.title.toLowerCase();
-        const titleB = b.title.toLowerCase();
-        if (titleA < titleB) {
-          return sortDir === 'asc' ? -1 : 1;
-        }
-        if (titleA > titleB) {
-          return sortDir === 'asc' ? 1 : -1;
-        }
-        return 0;
-      });
-      const updatedState = { ...apiArticles, results: sortedResults };
-      setApiArticles(updatedState);
+      const sortedResults = sortResults(apiArticles, sortDir);
+      setApiArticles(sortedResults);
     },
     [apiArticles],
   );
@@ -101,13 +104,17 @@ export default function Index() {
   const onPageChange = useCallback(
     (pageNumber: number) => {
       if (pageNumber < currentPage) {
-        apiArticles && apiArticles.previous && fetchData(apiArticles.previous);
+        apiArticles &&
+          apiArticles.previous &&
+          fetchData(apiArticles.previous, sortByTitle);
       } else {
-        apiArticles && apiArticles.next && fetchData(apiArticles.next);
+        apiArticles &&
+          apiArticles.next &&
+          fetchData(apiArticles.next, sortByTitle);
       }
       setCurrentPage(pageNumber);
     },
-    [currentPage, apiArticles, fetchData],
+    [currentPage, apiArticles, fetchData, sortByTitle],
   );
 
   return (
