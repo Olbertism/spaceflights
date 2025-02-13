@@ -1,3 +1,4 @@
+import { Link } from '@remix-run/react';
 import type { MetaFunction } from '@vercel/remix';
 import { useCallback, useEffect, useState } from 'react';
 import { css } from 'styled-system/css';
@@ -24,7 +25,6 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasApiError, setHasApiError] = useState(false);
 
-  const [searchTerm, setSearchTerm] = useState('');
   const [sortByPublishedAt, setSortByPublishedAt] = useState<
     'asc' | 'desc' | null
   >(null);
@@ -56,7 +56,6 @@ export default function Index() {
     (searchTerm: string) => {
       setSortByPublishedAt(null);
       setSortByTitle(null);
-      setSearchTerm(searchTerm);
       fetchData(
         `https://api.spaceflightnewsapi.net/v4/articles/${searchTerm && '?title_contains=' + searchTerm}`,
       );
@@ -66,7 +65,6 @@ export default function Index() {
 
   const onSortByPublishedAt = useCallback(
     (sortDir: 'asc' | 'desc') => {
-      setSearchTerm('');
       setSortByTitle(null);
       setSortByPublishedAt(sortDir);
       fetchData(
@@ -78,9 +76,10 @@ export default function Index() {
 
   const onSortByTitle = useCallback(
     (sortDir: 'asc' | 'desc') => {
-      setSearchTerm('');
       setSortByPublishedAt(null);
       setSortByTitle(sortDir);
+      /* Spaceflights API does not seem to offer a BE sorting on the title. Therefore a simple front end
+      sorting on the current fetched data set is done */
       const sortedResults = apiArticles.results.sort((a, b) => {
         const titleA = a.title.toLowerCase();
         const titleB = b.title.toLowerCase();
@@ -138,17 +137,19 @@ export default function Index() {
           md: { flexDir: 'row' },
         })}
       >
-        <div className={flex()}>
-          <h1
-            className={css({
-              fontSize: '3xl',
-              fontWeight: 'bold',
-              margin: 'auto',
-            })}
-          >
-            Spaceflights News
-          </h1>
-        </div>
+        <Link to={'/'}>
+          <div className={flex()}>
+            <h1
+              className={css({
+                fontSize: '3xl',
+                fontWeight: 'bold',
+                margin: 'auto',
+              })}
+            >
+              Spaceflights News
+            </h1>
+          </div>
+        </Link>
 
         <div
           className={css({
@@ -192,6 +193,7 @@ export default function Index() {
                   <div
                     className={flex({
                       height: '100%',
+                      justifyContent: 'space-around',
                     })}
                   >
                     <a

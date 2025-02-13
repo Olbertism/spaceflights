@@ -10,6 +10,10 @@ const globalCss = defineGlobalStyles({
   button: {
     cursor: 'pointer',
   },
+  'button:disabled': {
+    cursor: 'default',
+    color: 'neutral !important',
+  },
 });
 
 export default defineConfig({
@@ -32,7 +36,7 @@ export default defineConfig({
         colors: {
           primary: { value: '#3A4E48' },
           secondary: { value: '#8B9D83' },
-          accent: { value: '#BEB0A7' },
+          accent: { value: '#EEEEFF' },
           background: { value: '#FFFBF9' },
           neutral: { value: '#6A7B76' },
           black: { value: '#040303' },
